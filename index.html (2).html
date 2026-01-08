@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator Suite | IELTS & Standard Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variables for consistent theming */
+        :root {
+            --primary: #5a67d8;
+            --primary-dark: #4c51bf;
+            --secondary: #00d2d3;
+            --secondary-dark: #00a8a8;
+            --accent: #ff6b9d;
+            --accent-dark: #ff4081;
+            --bg-color: #0f172a;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --border-radius: 16px;
+            --transition: all 0.3s ease;
+            --glow: 0 10px 30px rgba(0, 210, 211, 0.15);
+            --glow-accent: 0 10px 30px rgba(255, 107, 157, 0.15);
+        }
+
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(90, 103, 216, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 107, 157, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 210, 211, 0.08) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        /* Container and Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-top: 2rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            margin-bottom: 4rem;
+        }
+
+        @media (min-width: 992px) {
+            .calculator-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--glow);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: var(--transition);
+            height: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--glow), 0 15px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.2rem;
+            font-size: 1.8rem;
+        }
+
+        .ielts-icon {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 5px 15px rgba(90, 103, 216, 0.3);
+        }
+
+        .calc-icon {
+            background: linear-gradient(135deg, var(--accent), #ff9f43);
+            box-shadow: 0 5px 15px rgba(255, 107, 157, 0.3);
+        }
+
+        /* IELTS Calculator Styles */
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .score-range {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .score-input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .score-input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(0, 210, 211, 0.2);
+        }
+
+        .score-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .ielts-result-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .ielts-result-container.show {
+            display: block;
+        }
+
+        .result-title {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .band-score {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 0.5rem 0;
+            line-height: 1;
+        }
+
+        .band-description {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin: 1rem 0;
+        }
+
+        .band-detail {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Normal Calculator Styles */
+        .calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 15px;
+            margin-top: 1rem;
+        }
+
+        .calculator-display {
+            grid-column: span 4;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: right;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
+
+        .calculator-expression {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            min-height: 1.8rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .calculator-result {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            min-height: 3rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .calculator-btn {
+            padding: 1.2rem 0;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.07);
+            color: var(--text-primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calculator-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .calculator-btn:active {
+            transform: translateY(1px);
+        }
+
+        .calculator-btn.operator {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .calculator-btn.operator:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        }
+
+        .calculator-btn.equals {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+            color: white;
+        }
+
+        .calculator-btn.equals:hover {
+            background: linear-gradient(135deg, var(--secondary-dark), var(--secondary));
+        }
+
+        .calculator-btn.clear {
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: white;
+        }
+
+        .calculator-btn.clear:hover {
+            background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+        }
+
+        .calculator-btn.zero {
+            grid-column: span 2;
+        }
+
+        /* Footer Styles */
+        footer {
+            text-align: center;
+            padding: 3rem 0 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 2rem;
+        }
+
+        .credit {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .credit:hover {
+            color: var(--text-primary);
+            transform: translateY(-3px);
+        }
+
+        .credit::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+            transition: var(--transition);
+            transform: translateX(-50%);
+        }
+
+        .credit:hover::after {
+            width: 100%;
+        }
+
+        .signature {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes counter {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .counter-animation {
+            animation: counter 0.8s ease-out;
+        }
+
+        .pulse {
+            animation: pulse 0.5s ease;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            h2 {
+                font-size: 1.8rem;
+            }
+            
+            .container {
+                padding: 1.5rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            .calculator-btn {
+                padding: 1rem 0;
+                font-size: 1.2rem;
+            }
+            
+            .band-score {
+                font-size: 3.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .card-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+            
+            .calculator {
+                grid-gap: 10px;
+            }
+            
+            .calculator-btn {
+                padding: 0.9rem 0;
+                font-size: 1.1rem;
+            }
+            
+            .calculator-result {
+                font-size: 2rem;
+            }
+        }
+
+        /* Utility Classes */
+        .highlight {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .instruction {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Calculator Suite</h1>
+            <p class="subtitle">Professional tools for IELTS band calculation and everyday computations. Featuring a modern glassmorphism design with smooth animations and responsive layout.</p>
+        </header>
+
+        <div class="calculator-grid">
+            <!-- IELTS Calculator -->
+            <section class="ielts-calculator">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon ielts-icon">
+                            <i class="fas fa-globe-americas"></i>
+                        </div>
+                        <div>
+                            <h2>IELTS Band Calculator</h2>
+                            <p>Calculate your overall IELTS band score</p>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <div class="input-label">
+                            <label for="listening">Listening</label>
+                            <span class="score-range">0.0 - 9.0</span>
+                        </div>
+                        <input type="number" id="listening" class="score-input" min="0" max="9" step="0.5" placeholder="Enter listening score">
+                    </div>
+                    
+                    <div class="input-group">
+                        <div class="input-label">
+                            <label for="reading">Reading</label>
+                            <span class="score-range">0.0 - 9.0</span>
+                        </div>
+                        <input type="number" id="reading" class="score-input" min="0" max="9" step="0.5" placeholder="Enter reading score">
+                    </div>
+                    
+                    <div class="input-group">
+                        <div class="input-label">
+                            <label for="writing">Writing</label>
+                            <span class="score-range">0.0 - 9.0</span>
+                        </div>
+                        <input type="number" id="writing" class="score-input" min="0" max="9" step="0.5" placeholder="Enter writing score">
+                    </div>
+                    
+                    <div class="input-group">
+                        <div class="input-label">
+                            <label for="speaking">Speaking</label>
+                            <span class="score-range">0.0 - 9.0</span>
+                        </div>
+                        <input type="number" id="speaking" class="score-input" min="0" max="9" step="0.5" placeholder="Enter speaking score">
+                    </div>
+                    
+                    <p class="instruction">Scores will be automatically calculated as you enter values. Follows official IELTS rounding rules.</p>
+                    
+                    <div id="ieltsResult" class="ielts-result-container">
+                        <div class="result-title">Your Overall Band Score</div>
+                        <div id="bandScore" class="band-score">0.0</div>
+                        <div id="bandDescription" class="band-description">Enter scores to calculate</div>
+                        <div id="bandDetail" class="band-detail">Your overall band score will appear here</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Normal Calculator -->
+            <section class="normal-calculator">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon calc-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <div>
+                            <h2>Standard Calculator</h2>
+                            <p>Perform basic arithmetic operations</p>
+                        </div>
+                    </div>
+                    
+                    <div class="calculator">
+                        <div class="calculator-display">
+                            <div id="expression" class="calculator-expression"></div>
+                            <div id="result" class="calculator-result">0</div>
+                        </div>
+                        
+                        <button class="calculator-btn clear" data-action="clear">C</button>
+                        <button class="calculator-btn operator" data-action="backspace">⌫</button>
+                        <button class="calculator-btn operator" data-action="%">%</button>
+                        <button class="calculator-btn operator" data-action="/">÷</button>
+                        
+                        <button class="calculator-btn" data-number="7">7</button>
+                        <button class="calculator-btn" data-number="8">8</button>
+                        <button class="calculator-btn" data-number="9">9</button>
+                        <button class="calculator-btn operator" data-action="*">×</button>
+                        
+                        <button class="calculator-btn" data-number="4">4</button>
+                        <button class="calculator-btn" data-number="5">5</button>
+                        <button class="calculator-btn" data-number="6">6</button>
+                        <button class="calculator-btn operator" data-action="-">−</button>
+                        
+                        <button class="calculator-btn" data-number="1">1</button>
+                        <button class="calculator-btn" data-number="2">2</button>
+                        <button class="calculator-btn" data-number="3">3</button>
+                        <button class="calculator-btn operator" data-action="+">+</button>
+                        
+                        <button class="calculator-btn zero" data-number="0">0</button>
+                        <button class="calculator-btn" data-action=".">.</button>
+                        <button class="calculator-btn equals" data-action="=">=</button>
+                    </div>
+                    
+                    <p class="instruction">You can also use your keyboard for input. Supports +, -, *, /, %, and decimal operations.</p>
+                </div>
+            </section>
+        </div>
+        
+        <footer>
+            <div class="credit">
+                Designed & Developed by <span class="signature">Afsan</span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // IELTS Calculator Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            // IELTS Score Input Elements
+            const listeningInput = document.getElementById('listening');
+            const readingInput = document.getElementById('reading');
+            const writingInput = document.getElementById('writing');
+            const speakingInput = document.getElementById('speaking');
+            const ieltsResult = document.getElementById('ieltsResult');
+            const bandScore = document.getElementById('bandScore');
+            const bandDescription = document.getElementById('bandDescription');
+            const bandDetail = document.getElementById('bandDetail');
+            
+            // Normal Calculator Elements
+            const calculatorResult = document.getElementById('result');
+            const calculatorExpression = document.getElementById('expression');
+            const calculatorButtons = document.querySelectorAll('.calculator-btn');
+            
+            // IELTS Band Descriptions
+            const bandDescriptions = {
+                9: { title: "Expert User", description: "Has fully operational command of the language: appropriate, accurate and fluent with complete understanding." },
+                8.5: { title: "Very Good User", description: "Has fully operational command of the language with only occasional unsystematic inaccuracies." },
+                8: { title: "Very Good User", description: "Has fully operational command of the language with only occasional unsystematic inaccuracies." },
+                7.5: { title: "Good User", description: "Has operational command of the language, though with occasional inaccuracies and misunderstandings." },
+                7: { title: "Good User", description: "Has operational command of the language, though with occasional inaccuracies and misunderstandings." },
+                6.5: { title: "Competent User", description: "Has generally effective command of the language despite some inaccuracies and misunderstandings." },
+                6: { title: "Competent User", description: "Has generally effective command of the language despite some inaccuracies and misunderstandings." },
+                5.5: { title: "Modest User", description: "Has partial command of the language, coping with overall meaning in most situations." },
+                5: { title: "Modest User", description: "Has partial command of the language, coping with overall meaning in most situations." },
+                4.5: { title: "Limited User", description: "Basic competence is limited to familiar situations. Has frequent problems in understanding and expression." },
+                4: { title: "Limited User", description: "Basic competence is limited to familiar situations. Has frequent problems in understanding and expression." },
+                3.5: { title: "Extremely Limited User", description: "Conveys and understands only general meaning in very familiar situations." },
+                3: { title: "Extremely Limited User", description: "Conveys and understands only general meaning in very familiar situations." },
+                2.5: { title: "Intermittent User", description: "No real communication is possible except for the most basic information." },
+                2: { title: "Intermittent User", description: "No real communication is possible except for the most basic information." },
+                1.5: { title: "Non User", description: "Essentially has no ability to use the language beyond possibly a few isolated words." },
+                1: { title: "Non User", description: "Essentially has no ability to use the language beyond possibly a few isolated words." },
+                0: { title: "Did not attempt the test", description: "No assessable information provided." }
+            };
+            
+            // IELTS Score Calculation Function
+            function calculateIELTSBand() {
+                // Get all input values
+                const listening = parseFloat(listeningInput.value) || 0;
+                const reading = parseFloat(readingInput.value) || 0;
+                const writing = parseFloat(writingInput.value) || 0;
+                const speaking = parseFloat(speakingInput.value) || 0;
+                
+                // Check if any value is entered
+                if (listening === 0 && reading === 0 && writing === 0 && speaking === 0) {
+                    ieltsResult.classList.remove('show');
+                    return;
+                }
+                
+                // Calculate average
+                const average = (listening + reading + writing + speaking) / 4;
+                
+                // Apply IELTS rounding rules
+                let roundedScore = Math.round(average * 2) / 2;
+                
+                // Ensure score is between 0 and 9
+                roundedScore = Math.min(9, Math.max(0, roundedScore));
+                
+                // Find the closest band description
+                let bandKey = 0;
+                const bandKeys = Object.keys(bandDescriptions).map(Number).sort((a, b) => b - a);
+                
+                for (const key of bandKeys) {
+                    if (roundedScore >= key) {
+                        bandKey = key;
+                        break;
+                    }
+                }
+                
+                // Update result display with animation
+                ieltsResult.classList.add('show');
+                bandScore.textContent = roundedScore.toFixed(1);
+                bandScore.classList.add('counter-animation');
+                
+                setTimeout(() => {
+                    bandScore.classList.remove('counter-animation');
+                }, 800);
+                
+                bandDescription.textContent = bandDescriptions[bandKey].title;
+                bandDetail.textContent = bandDescriptions[bandKey].description;
+            }
+            
+            // Add event listeners to IELTS inputs
+            const ieltsInputs = [listeningInput, readingInput, writingInput, speakingInput];
+            ieltsInputs.forEach(input => {
+                input.addEventListener('input', calculateIELTSBand);
+                input.addEventListener('change', function() {
+                    // Validate input range
+                    let value = parseFloat(this.value);
+                    if (isNaN(value) || value < 0) value = 0;
+                    if (value > 9) value = 9;
+                    
+                    // Round to nearest 0.5
+                    value = Math.round(value * 2) / 2;
+                    this.value = value.toFixed(1);
+                    
+                    calculateIELTSBand();
+                });
+            });
+            
+            // Normal Calculator Logic
+            let currentInput = '0';
+            let previousInput = '';
+            let operator = null;
+            let waitingForNewInput = false;
+            
+            // Update calculator display
+            function updateCalculatorDisplay() {
+                calculatorResult.textContent = currentInput;
+                calculatorExpression.textContent = previousInput + (operator ? ' ' + getOperatorSymbol(operator) + ' ' : '');
+            }
+            
+            // Get operator symbol for display
+            function getOperatorSymbol(op) {
+                switch(op) {
+                    case '+': return '+';
+                    case '-': return '−';
+                    case '*': return '×';
+                    case '/': return '÷';
+                    case '%': return '%';
+                    default: return op;
+                }
+            }
+            
+            // Handle number input
+            function inputNumber(num) {
+                // Add pulse animation to button
+                const button = document.querySelector(`[data-number="${num}"]`);
+                if (button) button.classList.add('pulse');
+                setTimeout(() => button.classList.remove('pulse'), 200);
+                
+                if (waitingForNewInput) {
+                    currentInput = num;
+                    waitingForNewInput = false;
+                } else {
+                    currentInput = currentInput === '0' ? num : currentInput + num;
+                }
+                updateCalculatorDisplay();
+            }
+            
+            // Handle decimal point
+            function inputDecimal() {
+                if (waitingForNewInput) {
+                    currentInput = '0.';
+                    waitingForNewInput = false;
+                } else if (!currentInput.includes('.')) {
+                    currentInput += '.';
+                }
+                updateCalculatorDisplay();
+            }
+            
+            // Handle operator input
+            function handleOperator(nextOperator) {
+                const inputValue = parseFloat(currentInput);
+                
+                if (operator && waitingForNewInput) {
+                    operator = nextOperator;
+                    updateCalculatorDisplay();
+                    return;
+                }
+                
+                if (previousInput === '') {
+                    previousInput = currentInput;
+                } else if (operator) {
+                    const result = calculate(parseFloat(previousInput), inputValue, operator);
+                    
+                    if (result === null || isNaN(result) || !isFinite(result)) {
+                        // Handle division by zero or invalid operations
+                        resetCalculator();
+                        calculatorResult.textContent = 'Error';
+                        return;
+                    }
+                    
+                    currentInput = String(result);
+                    previousInput = currentInput;
+                }
+                
+                waitingForNewInput = true;
+                operator = nextOperator;
+                updateCalculatorDisplay();
+            }
+            
+            // Perform calculation
+            function calculate(firstNum, secondNum, operator) {
+                switch(operator) {
+                    case '+':
+                        return firstNum + secondNum;
+                    case '-':
+                        return firstNum - secondNum;
+                    case '*':
+                        return firstNum * secondNum;
+                    case '/':
+                        return secondNum === 0 ? null : firstNum / secondNum;
+                    case '%':
+                        return firstNum % secondNum;
+                    default:
+                        return secondNum;
+                }
+            }
+            
+            // Reset calculator
+            function resetCalculator() {
+                currentInput = '0';
+                previousInput = '';
+                operator = null;
+                waitingForNewInput = false;
+                updateCalculatorDisplay();
+            }
+            
+            // Handle equals operation
+            function performCalculation() {
+                if (!operator || waitingForNewInput) return;
+                
+                const inputValue = parseFloat(currentInput);
+                const prevValue = parseFloat(previousInput);
+                
+                const result = calculate(prevValue, inputValue, operator);
+                
+                if (result === null || isNaN(result) || !isFinite(result)) {
+                    // Handle division by zero or invalid operations
+                    resetCalculator();
+                    calculatorResult.textContent = 'Error';
+                    return;
+                }
+                
+                // Add animation to equals button
+                const equalsButton = document.querySelector('[data-action="="]');
+                equalsButton.classList.add('pulse');
+                setTimeout(() => equalsButton.classList.remove('pulse'), 300);
+                
+                currentInput = String(result);
+                previousInput = '';
+                operator = null;
+                waitingForNewInput = true;
+                updateCalculatorDisplay();
+            }
+            
+            // Handle backspace
+            function handleBackspace() {
+                if (currentInput.length > 1) {
+                    currentInput = currentInput.slice(0, -1);
+                } else {
+                    currentInput = '0';
+                }
+                updateCalculatorDisplay();
+            }
+            
+            // Add event listeners to calculator buttons
+            calculatorButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const action = this.dataset.action;
+                    const number = this.dataset.number;
+                    
+                    if (number) {
+                        inputNumber(number);
+                    } else if (action === '.') {
+                        inputDecimal();
+                    } else if (action === 'clear') {
+                        resetCalculator();
+                    } else if (action === 'backspace') {
+                        handleBackspace();
+                    } else if (action === '=') {
+                        performCalculation();
+                    } else {
+                        handleOperator(action);
+                    }
+                });
+            });
+            
+            // Keyboard support for calculator
+            document.addEventListener('keydown', function(event) {
+                const key = event.key;
+                
+                // Prevent default behavior for calculator keys
+                if (/[\d\.\+\-\*\/%=]/.test(key) || key === 'Enter' || key === 'Backspace' || key === 'Escape') {
+                    event.preventDefault();
+                    
+                    if (key >= '0' && key <= '9') {
+                        inputNumber(key);
+                    } else if (key === '.') {
+                        inputDecimal();
+                    } else if (key === '+' || key === '-' || key === '*' || key === '/' || key === '%') {
+                        handleOperator(key === '*' ? '*' : key);
+                    } else if (key === 'Enter' || key === '=') {
+                        performCalculation();
+                    } else if (key === 'Backspace') {
+                        handleBackspace();
+                    } else if (key === 'Escape') {
+                        resetCalculator();
+                    }
+                }
+            });
+            
+            // Initialize displays
+            updateCalculatorDisplay();
+            
+            // Show initial instruction for IELTS calculator
+            setTimeout(() => {
+                listeningInput.focus();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
